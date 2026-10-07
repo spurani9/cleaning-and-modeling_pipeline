@@ -239,17 +239,3 @@ docs/
 CLAUDE.md
 Dockerfile
 ```
-
-## 13. 3–5 minute walkthrough
-
-**0:00–0:45 — Problem/spec.** Show `BUSINESS_CONTEXT.md` → `specs/data_contract.md`. Explain that the business rules are encoded before asking AI to write transformation code.
-
-**0:45–1:30 — Architecture.** Open `docs/architecture.mmd`. Point out raw CSV → deterministic pipeline → governed views → LLM planner → SQL guardrails → DuckDB.
-
-**1:30–2:30 — Correctness.** Run `python evals/run_evals.py`. Show all six stakeholder cases passing against golden answers. Mention the explicit account-snapshot definitions.
-
-**2:30–3:30 — AI use + safety.** Open `.claude/prompt_log.md` and `app/query_agent.py`. Run one natural-language question and show the generated SQL alongside the result.
-
-**3:30–4:15 — Honesty/trade-offs.** Show duplicate/date assumptions and the expected unsupported historical-MRR question. Explain what you would do with source provenance and subscription events.
-
-**4:15–5:00 — Live eval (optional).** Run `python evals/run_live_evals.py` if an API key is configured and show model-generated SQL being compared with deterministic golden results.
