@@ -69,6 +69,16 @@ def main() -> None:
         },
     ]
 
+    # Required rubric case: this is intentionally unsupported by the supplied data.
+    # There is no subscription-state event history, so historical pre-churn MRR
+    # cannot be answered without inventing facts. This is an expected failure,
+    # not a deterministic SQL correctness failure.
+    expected_unsupported = {
+        "name": "EXPECTED FAIL — historical pre-churn MRR",
+        "question": "What was each account's MRR immediately before it churned?",
+        "reason": "The ledger has current churned state but no subscription-state event history.",
+    }
+
     failures = 0
     for case in cases:
         try:
@@ -92,6 +102,7 @@ def main() -> None:
             failures += 1
 
     print(f"{len(cases) - failures}/{len(cases)} deterministic stakeholder evals passed")
+    print(f"EXPECTED FAIL {expected_unsupported['name']}: {expected_unsupported['reason']}")
     raise SystemExit(1 if failures else 0)
 
 

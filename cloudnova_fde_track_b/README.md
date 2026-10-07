@@ -57,7 +57,7 @@ pytest -q
 python evals/run_evals.py
 ```
 
-The six offline evals compare the actual SQL result to golden answers. A test that merely returns rows is not considered a pass.
+The six offline evals compare the actual SQL result to golden answers. A test that merely returns rows is not considered a pass. The harness also prints one explicit **EXPECTED FAIL** case for a historical pre-churn MRR question that the supplied data cannot support.
 
 ### Live natural-language demo
 
