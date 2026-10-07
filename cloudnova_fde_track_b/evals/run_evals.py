@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 import duckdb
 import pandas as pd
 
@@ -79,11 +84,21 @@ def main() -> None:
         "reason": "The ledger has current churned state but no subscription-state event history.",
     }
 
+    def _normalize_value(value):
+        # DuckDB/pandas represent SQL NULLs as NaN in some dataframe paths.
+        return None if pd.isna(value) else value
+
+    def _normalize_rows(rows):
+        normalized = []
+        for row in rows:
+            normalized.append({k: _normalize_value(v) for k, v in row.items()})
+        return normalized
+
     failures = 0
     for case in cases:
         try:
             result = execute(con, QueryPlan(sql=case["sql"], explanation="canonical eval query"))
-            actual = _rows(result).to_dict(orient="records")
+            actual = _normalize_rows(_rows(result).to_dict(orient="records"))
             expected = case["expected"]
             if isinstance(expected, dict):
                 ok = len(actual) == 1 and all(

@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
+from typing import Optional, Union
 
 import pandas as pd
 
@@ -49,7 +50,7 @@ def parse_date(value: object) -> tuple[pd.Timestamp, bool]:
     return pd.Timestamp(year=y, month=month, day=day), ambiguous
 
 
-def normalize_email(value: object) -> str | None:
+def normalize_email(value: object) -> Optional[str]:
     if pd.isna(value) or not str(value).strip():
         return None
     s = str(value).strip().replace("_at_", "@")
@@ -73,7 +74,7 @@ def build_account_snapshot(df: pd.DataFrame) -> pd.DataFrame:
     return latest[["account_id","account_name","region","industry","plan","churned","active","mrr_usd","csat_score","invoice_date"]]
 
 
-def build_clean_dataset(raw_csv: str | Path, output_csv: str | Path | None = None) -> pd.DataFrame:
+def build_clean_dataset(raw_csv: Union[str, Path], output_csv: Optional[Union[str, Path]] = None) -> pd.DataFrame:
     df = pd.read_csv(raw_csv, dtype=str, keep_default_na=True)
     original_rows = len(df)
     df["_source_order"] = range(len(df))

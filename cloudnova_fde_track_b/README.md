@@ -38,6 +38,8 @@ The assessment explicitly prioritizes Spec-Driven Development, AI steering, eval
 
 ### Setup
 
+Python 3.9+ is supported. The repository avoids Python 3.10-only union-type syntax so the test suite also works in common Python 3.9 environments.
+
 ```bash
 python -m venv .venv
 # Windows

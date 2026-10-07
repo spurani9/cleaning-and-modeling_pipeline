@@ -157,9 +157,16 @@ def validate_sql(sql: str) -> None:
         raise ValueError("Filesystem/network SQL functions are not allowed")
 
     relations = {m.group(1).lower() for m in TABLE_PATTERN.finditer(s)}
-    if not relations:
+    # SQL also uses `FROM` inside expressions such as `EXTRACT(YEAR FROM invoice_date)`.
+    # Treat governed schema columns as expression identifiers, not relations. This keeps
+    # the static guardrail strict for real table references without rejecting valid SQL.
+    schema_columns = {column for table in SCHEMA.values() for column in table}
+    relation_candidates = relations - schema_columns
+    if not relation_candidates:
+        relation_candidates = relations & ALLOWED_TABLES
+    if not relation_candidates:
         raise ValueError("Query must reference a governed relation")
-    unknown = relations - ALLOWED_TABLES
+    unknown = relation_candidates - ALLOWED_TABLES
     if unknown:
         raise ValueError(f"Query references unapproved relation(s): {sorted(unknown)}")
 
