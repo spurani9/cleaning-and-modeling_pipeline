@@ -14,3 +14,16 @@ Create offline deterministic tests for the stakeholder questions and SQL safety.
 
 ## Review instruction
 Challenge generated code for double-counting, ambiguous dates, duplicate survivorship, arbitrary SQL execution, silent data loss, secrets, and non-reproducible behavior. Fix issues before adding features.
+
+## Prompt 5 — Stakeholder correctness review
+Re-run all six stakeholder questions as deterministic golden-result evals. Do not treat “query returned rows” as success. Explicitly define account-level metrics and distinguish “paid invoices” from net recognized revenue including refunds.
+
+## Prompt 6 — Query safety hardening
+Strengthen the NL-to-SQL boundary with schema-aware structured output, governed table declarations, static SQL safety checks, filesystem/network escape-hatch blocking, and DuckDB EXPLAIN validation before execution. Keep the LLM responsible for query structure, not financial arithmetic.
+
+## Review findings corrected
+- Q1 now filters `status='paid'` because the stakeholder wording explicitly says “paid invoices”; refunds are evaluated separately.
+- Q5 aggregates revenue by `account_id`, then joins the latest account snapshot for account name and latest CSAT. Grouping by historical `account_name` could split one customer because the dirty export contains inconsistent names.
+- Offline evals now compare actual result values against golden answers.
+- A separate live-model eval runs the six natural-language prompts through the configured model and compares normalized results to the deterministic goldens.
+- An unsupported historical-MRR question is documented as an expected limitation rather than allowing the agent to fabricate subscription history.

@@ -115,9 +115,17 @@ def build_clean_dataset(raw_csv: str | Path, output_csv: str | Path | None = Non
     df["amount_local"] = df["amount"].map(parse_amount).astype(float)
     df["amount_usd"] = [float(Decimal(str(a)) * FX[c]) for a,c in zip(df["amount_local"],df["currency"])]
     df["discount_pct"] = pd.to_numeric(df["discount_pct"], errors="raise").astype(float)
+    if not df["discount_pct"].between(0, 100).all():
+        raise ValueError("discount_pct must be between 0 and 100")
     df["seats"] = pd.to_numeric(df["seats"], errors="raise").astype(int)
+    if not df["seats"].gt(0).all():
+        raise ValueError("seats must be positive")
     df["csat_score"] = pd.to_numeric(df["csat_score"], errors="coerce")
+    if not df["csat_score"].dropna().between(1, 5).all():
+        raise ValueError("csat_score must be between 1 and 5 when present")
     df["support_tickets"] = pd.to_numeric(df["support_tickets"], errors="raise").astype(int)
+    if not df["support_tickets"].ge(0).all():
+        raise ValueError("support_tickets must be non-negative")
     df["churned"] = df["churned"].map(lambda x: BOOL.get(norm(x)))
     if df["churned"].isna().any(): raise ValueError("Unknown boolean value")
 

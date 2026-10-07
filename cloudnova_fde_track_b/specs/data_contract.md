@@ -61,4 +61,12 @@ List prices: starter=49, pro=99, enterprise=299 USD/seat/month.
 
 
 ## Account snapshot
-Because the source is an invoice ledger, repeated invoices must not be treated as repeated active subscriptions. Build one `accounts` governed view using the latest observed invoice per `account_id` (invoice_date, then invoice_id as stable tie-breaker). Use that snapshot for account-level MRR, churn, and latest CSAT questions. A production implementation should replace this exercise snapshot with a true subscription-state model/event history.
+Because the source is an invoice ledger, repeated invoices must not be treated as repeated active subscriptions. Build one `accounts` governed view using the latest observed invoice per `account_id` (invoice_date, then invoice_id as stable tie-breaker). The latest account name, plan, region, churn flag and CSAT come from this snapshot.
+
+Account-level definitions:
+- active account = `churned = false` on the latest snapshot row;
+- average MRR per region = average `mrr_usd` across active snapshot rows;
+- churn rate by plan = churned snapshot rows divided by all snapshot rows in that plan;
+- top-account revenue = sum invoice `recognized_revenue_usd` by `account_id`, then join the snapshot for current account name and CSAT. This avoids splitting one customer when historical `account_name` values differ.
+
+A production implementation should replace this exercise snapshot with a true subscription-state model/event history.

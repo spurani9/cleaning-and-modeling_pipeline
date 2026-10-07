@@ -6,3 +6,7 @@ __pycache__/
 artifacts/
 *.duckdb
 *.parquet
+__pycache__/
+.pytest_cache/
+artifacts/
+.env
