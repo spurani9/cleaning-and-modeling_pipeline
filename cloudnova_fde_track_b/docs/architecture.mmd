@@ -1,0 +1,14 @@
+flowchart LR
+    A[Raw CSV] --> B[Spec-driven cleaning pipeline]
+    C[BUSINESS_CONTEXT.md] --> B
+    D[specs/data_contract.md] --> B
+    B --> E[Governed invoice dataset]
+    E --> F[DuckDB analytical view]
+    G[Stakeholder question] --> H[LLM query planner]
+    D --> H
+    H --> I[SQL validator / guardrails]
+    I --> F
+    F --> J[Deterministic result]
+    J --> K[Answer + SQL + assumptions]
+    E --> L[Eval harness]
+    L --> M[Pass / fail + known limitations]
